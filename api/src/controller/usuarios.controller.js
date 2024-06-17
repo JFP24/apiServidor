@@ -23,8 +23,6 @@ export const registroUsuarios = async (req, res )=> {
             password: passwordHash,
             rol,
 
-
-
         })
 //se guarda en la base de datos
 const userSaved = await newUser.save()

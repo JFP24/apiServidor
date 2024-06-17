@@ -4,7 +4,7 @@ const hotelSchema = new mongoose.Schema({
     nombre : {
         //tipo
         type :String,
-        required : true,    
+       required : true,    
     },   
  
     habitaciones : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Habitacion' }],

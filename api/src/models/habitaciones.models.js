@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 //Creamos el schema , un objeto con las propiedades que queremos validar en la DB de mongodb
 const habitacionSchema = new mongoose.Schema({
+    habitacionID : {
+        type : String,
+        required : true,
+    },
     numeroHabitacion : {
         type : String,
         required : true,
@@ -64,7 +68,7 @@ const habitacionSchema = new mongoose.Schema({
 
     
     hotel : { type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' },
-    huesped : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Huesped' }]
+   
 }
 )
 
