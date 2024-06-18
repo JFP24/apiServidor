@@ -1,31 +1,32 @@
 
 import User from "../models/usuarios.models.js"
+import jwt from "jsonwebtoken"
 
 
 export const validateRolClient = async (req, res, next) => {
-    try {
-      //verificamos el id del usuario en el modelo, y ese user tendra una propiedad rol
-      const user = await User.findById(req.user.id);
-      console.log(user.rol)
-      if(user.rol === "administrador"){
-        next()
-      }else  {
-        return res.status(404).json({ message: "no tienes authorizacion para acceder a esta pagina" });
-      }
-      
-    } catch (error) {
-      console.log(error);
-      res.status(404).json({ message: "Error desde is rol de administrador" });
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
     }
-  };
+
+    const decoded = jwt.verify(token, 'toeknsecreto'); // Reemplaza 'your_jwt_secret' con tu clave secreta JWT
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.rol === "Admin") {
+      next();
+    } else {
+      return res.status(403).json({ message: "No tienes autorización para acceder a esta página" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error desde is rol de administrador" });
+  }
+};
 
 
-
-
-
-//   const roles = await Role.find({ _id: { $in: user.roles } });
-//   const findRol = roles.map((r) => r.name);
-//   console.log(findRol);
-//   if (findRol[0] === "moderater" || findRol[1] === "admin") {
-//     next();
-//   }

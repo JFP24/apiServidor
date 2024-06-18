@@ -195,18 +195,19 @@ export const getUsuarios = async (req, res)=> {
         console.log(usuarios)
         if(!usuarios) return res.status(301).message("NO HAY HABITACIONES CREADAS EN EL MOMENTO")
         //mapeamos el arrelgo para mandar un objeto a el front
-        // const fronthabitaciones = habitaciones.map((e)=> {
-        //     return {
-        //         id : e._id,
-        //         numeroHabitacion : e.numeroHabitacion,
-        //         correo : e.correo,
-        //         hostLocal :e.hostLocal,
-        //         topicLocal : e.topicLocal ,
-        //         topicExterno :  e.topicExterno
-        //     }
-        // })
-        // //respondemos el objeto
-        // return res.status(202).json(fronthabitaciones)
+        const usuariosFront = usuarios.map((e)=> {
+            return {
+                id : e._id,
+                username : e.username,
+                email : e.email,
+                rol : e.rol,
+                hotel : e.hotel
+            }
+        })
+
+        console.log(usuariosFront)
+        //respondemos el objeto
+        return res.status(202).json(usuariosFront)
     } catch (error) {
         console.log(error)
         return res.status(401).json({message : "Error from geHome"})
@@ -214,4 +215,16 @@ export const getUsuarios = async (req, res)=> {
 }
 
 
-
+export const actualizarUsuarios= async (req, res)=> {
+    try {
+        const id = req.params.id
+        if(!id) return res.status(404).json({message: "necesitas un id para poder actualizar "})
+        //el new true es para modificar y me cambie los valores mandados por el vody
+        console.log(req.body, "this is the body")
+        const actualizar = await User.findByIdAndUpdate(id, req.body , { new : true} )
+        if(!actualizar) return res.status(404).json({message: "usuario no encontrada"})
+        return res.status(202).json({actualizar})
+    } catch (error) {
+        return res.status(404).json({message: "error de actualizarUsuario"})
+    }
+}

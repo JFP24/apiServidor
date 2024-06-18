@@ -44,7 +44,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 
-  // Ejecuta las tareas periódicas cuando el servidor se inicia
+  // se conecta automaticamente a el topico de los hoteles
   connectAndFetchData();
 });
 

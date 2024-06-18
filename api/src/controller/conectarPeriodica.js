@@ -4,6 +4,9 @@ import Hotel from "../models/hotel.models.js"
 import mqtt from 'mqtt';
 import { io } from '../../app.js'; // Importa la instancia de io desde app.js
 
+
+
+//funcion que conecta a el topico , y filtra la informacion para la base de datos
 export const connectAndFetchData = () => {
     const mqttOptions = {
         host: "diseven7v2.disevenapp.com",
