@@ -16,6 +16,10 @@ const eventoSchema = new mongoose.Schema({
     hora: {
         type: String,
         required: true
+    },
+    numeroHabitacion: {
+        type: String,
+        required: true
     }
     
 },{ _id: false },);

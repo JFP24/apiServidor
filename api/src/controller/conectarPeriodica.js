@@ -1,12 +1,10 @@
 import Habitacion from '../models/habitaciones.models.js';
 import Respuesta from '../models/respuesta.models.js';
-import Hotel from "../models/hotel.models.js"
+import Hotel from "../models/hotel.models.js";
 import mqtt from 'mqtt';
 import { io } from '../../app.js'; // Importa la instancia de io desde app.js
 
-
-
-//funcion que conecta a el topico , y filtra la informacion para la base de datos
+// Función que conecta al tópico y filtra la información para la base de datos
 export const connectAndFetchData = () => {
     const mqttOptions = {
         host: "diseven7v2.disevenapp.com",
@@ -33,46 +31,39 @@ export const connectAndFetchData = () => {
     client.on('message', async (topic, message) => {
         try {
             const messageJSON = JSON.parse(message.toString());
-            console.log(messageJSON.data[0].value)
+            console.log(messageJSON.data[0].value);
             const mensaje = messageJSON.data[0].value;
 
-            //  console.log('Mensaje recibido:', mensaje);
-
             const { ID, Eventos } = mensaje;
-
-            //console.log('Eventos:', Eventos);
 
             if (Eventos && Array.isArray(Eventos)) {
                 // Filtra y valida los eventos
                 const eventosValidos = Eventos.filter(evento => {
-                    if (evento.NameEvent && evento.value && evento.fecha && evento.hora) {
-                      //  console.log(`Evento válido: ${JSON.stringify(evento)}`);
+                    if (evento.NameEvent && evento.value && evento.fecha && evento.hora && evento.Hab) {
                         return true;
                     } else {
                         console.warn(`Evento inválido: ${JSON.stringify(evento)}`);
                         return false;
                     }
                 }).map(evento => ({
-                    nameEvent: evento.NameEvent, // Mapeando NameEvent a nameEvent
+                    nameEvent: evento.NameEvent,
                     value: evento.value,
-                    fecha: evento.fecha, // Guardar fecha tal como entra
+                    fecha: evento.fecha,
                     hora: evento.hora,
-                    hotel : evento.Hotel,
-                    Hab : evento.Hab
-
+                    hotel: evento.Hotel,
+                    numeroHabitacion: evento.Hab
                 }));
 
-               // console.log('Eventos válidos:', eventosValidos);
+                console.log('Eventos válidos:', eventosValidos);
 
                 try {
                     let respuesta = await Respuesta.findOne({ dimasterID: ID });
-                  //  console.log('Respuesta encontrada:', respuesta);
 
                     if (respuesta) {
                         // Añadir nuevos eventos al array de eventos existente
                         respuesta.eventos = [...respuesta.eventos, ...eventosValidos];
                         await respuesta.save();
-                        //console.log('Respuesta actualizada:', respuesta);
+                        console.log('Respuesta actualizada:', respuesta);
                     } else {
                         // Crear un nuevo documento si no existe
                         const nuevaRespuesta = new Respuesta({
@@ -80,47 +71,40 @@ export const connectAndFetchData = () => {
                             eventos: eventosValidos
                         });
                         await nuevaRespuesta.save();
-                        //console.log('Nueva respuesta creada:', nuevaRespuesta);
+                        console.log('Nueva respuesta creada:', nuevaRespuesta);
                     }
 
                     // Verificar y actualizar habitación si corresponde
                     for (let evento of eventosValidos) {
                         if (['lavanderia', 'checkin', 'puerta', 'housekeeping', 'occupation', 'noMolestar'].includes(evento.nameEvent)) {
-                            let habitacion = await Habitacion.findOne({ habitacionID: ID });
+                            let habitacion = await Habitacion.findOne({ numeroHabitacion: evento.numeroHabitacion });
 
                             if (habitacion) {
                                 // Actualizar la habitación existente
                                 habitacion[evento.nameEvent] = evento.value;
                                 await habitacion.save();
-                              //  console.log('Habitación actualizada:', habitacion);
-
-                               // console.log(habitacion ,"esta es la habitacin que pido")
-                              io.emit('updateLavanderia', { id: habitacion.habitacionID, valor : habitacion.lavanderia })
-                               io.emit('updateNoMolestar', { id: habitacion.habitacionID, valor : habitacion.noMolestar })
+                                console.log('Habitación actualizada:', habitacion);
+                                io.emit('updateLavanderia', { id: habitacion.habitacionID, valor: habitacion.lavanderia });
+                                io.emit('updateNoMolestar', { id: habitacion.habitacionID, valor: habitacion.noMolestar });
                             } else {
                                 // Crear una nueva habitación si no existe
-                                const numeroHabitacion = evento.Hab ;
-                                console.log(ID)
                                 habitacion = new Habitacion({
                                     habitacionID: ID,
-                                    numeroHabitacion,
-                                    [`${evento.nameEvent}`]: evento.value,
-                                    // otros valores predeterminados pueden ir aquí
+                                    numeroHabitacion: evento.numeroHabitacion,
+                                    [`${evento.nameEvent}`]: evento.value
                                 });
                                 await habitacion.save();
-                            //    console.log('Nueva habitación creada:', habitacion);
-                            
-                            console.log(evento)
-                            let hotel = await Hotel.findOne({ nombre: evento.hotel });
-                            if (hotel) {
-                                hotel.habitaciones.push(habitacion._id);
-                                await hotel.save();
-                                console.log(`Habitación agregada al hotel: ${hotel.nombre}`);
-                            }
+                                console.log('Nueva habitación creada:', habitacion);
+
+                                let hotel = await Hotel.findOne({ nombre: evento.hotel });
+                                if (hotel) {
+                                    hotel.habitaciones.push(habitacion._id);
+                                    await hotel.save();
+                                    console.log(`Habitación agregada al hotel: ${hotel.nombre}`);
+                                }
                             }
                         }
                     }
-
                 } catch (error) {
                     console.error('Error al guardar los datos en MongoDB:', error);
                 }
