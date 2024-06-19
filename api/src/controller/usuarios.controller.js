@@ -97,7 +97,7 @@ export const logout = async (req, res)=> {
     }
 }
 
-import jwt from "jsonwebtoken"
+
 
 export const profile = async (req, res)=>{
     try {
