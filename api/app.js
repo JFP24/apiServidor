@@ -48,27 +48,27 @@ app.use("/api/v1", habitaciones);
 app.use("/api/v1", hotel);
 app.use("/api/v1", usuarios);
 
-const createAdminUser = async () => {
-  try {
-    const adminEmail = "diseven@diseven.com";
-    const adminExists = await users.findOne({ email: adminEmail });
-    const passwordHash = await bcrypt.hash("admin", 10)
-    if (!adminExists) {
-      const adminUser = new users({
-        username: "admin",
-        email: adminEmail,
-        password: passwordHash, // Asegúrate de cifrar la contraseña antes de guardar
-        rol: "Admin"
-      });
-      await adminUser.save();
-      console.log("Usuario admin creado exitosamente.");
-    } else {
-      console.log("Usuario admin ya existe.");
-    }
-  } catch (error) {
-    console.error("Error creando usuario admin:", error);
-  }
-};
+// const createAdminUser = async () => {
+//   try {
+//     const adminEmail = "diseven@diseven.com";
+//     const adminExists = await users.findOne({ email: adminEmail });
+//     const passwordHash = await bcrypt.hash("admin", 10)
+//     if (!adminExists) {
+//       const adminUser = new users({
+//         username: "admin",
+//         email: adminEmail,
+//         password: passwordHash, // Asegúrate de cifrar la contraseña antes de guardar
+//         rol: "Admin"
+//       });
+//       await adminUser.save();
+//       console.log("Usuario admin creado exitosamente.");
+//     } else {
+//       console.log("Usuario admin ya existe.");
+//     }
+//   } catch (error) {
+//     console.error("Error creando usuario admin:", error);
+//   }
+// };
 
 
 const PORT = process.env.PORT || 3000;
@@ -77,7 +77,7 @@ server.listen(PORT, () => {
 
   // se conecta automaticamente a el topico de los hoteles
   connectAndFetchData();
-createAdminUser()
+//createAdminUser()
 
 });
 

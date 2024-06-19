@@ -97,16 +97,10 @@ export const logout = async (req, res)=> {
     }
 }
 
-
-
 export const profile = async (req, res)=>{
     try {
-
-        const token = req.cookies.token;
-        const decoded = jwt.verify(token, 'toeknsecreto'); // Reemplaza 'your_jwt_secret' con tu clave secreta JWT
-        //const user = await User.findById(decoded.id);
         //obtenemos la informacion del usuario cuando este logueado
-       const userFound = await User.findById(decoded.id).populate("hotel")
+       const userFound = await User.findById(req.user.id).populate("hotel")
       // console.log(userFound)
        if(!userFound) return res.status(400).json({message : "Usuario no encontrado"})
         const habi = userFound.hotel.map(e=> {return e.habitaciones})
