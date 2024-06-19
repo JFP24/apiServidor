@@ -24,7 +24,7 @@ const server = http.createServer(app);
 // });
 const io = new Server(server, {
   cors: {
-    origin: "http://clientservidor.onrender.com",
+    origin: "https://clientservidor.onrender.com",
     methods: ["GET", "POST"]
   }
 });
@@ -39,7 +39,7 @@ app.use(cookieParser());
 //   credentials: true
 // }));
 app.use(cors({
-  origin: "http://clientservidor.onrender.com",
+  origin: "https://clientservidor.onrender.com",
   credentials: true
 }));
 
