@@ -1,13 +1,11 @@
-import User from "../models/usuarios.models.js"
-import bcrypt from "bcryptjs"
-import { createAccessToken } from "../libs/jwt.js"
-import Habitaciones from "../models/habitaciones.models.js"
-import jwt from "jsonwebtoken";
+import User from "../models/usuarios.models.js";
+import bcrypt from "bcryptjs";
+import { createAccessToken } from "../libs/jwt.js";
 
 export const registroUsuarios = async (req, res) => {
   try {
     const { password, email, username, rol } = req.body;
-    if (!email || !password || !username) return res.status(400).json({ message: "Te faltan Algunos espacios por llenar" });
+    if (!email || !password || !username) return res.status(400).json({ message: "Te faltan algunos espacios por llenar" });
     
     const userFound = await User.findOne({ email });
     if (userFound) return res.status(400).json({ message: "El email que intentas utilizar ya se encuentra en uso, intenta con otro diferente" });
@@ -80,6 +78,7 @@ export const login = async (req, res) => {
       return res.status(400).send({ msg: "Error desde login" });
     }
   };
+  
   
   
 

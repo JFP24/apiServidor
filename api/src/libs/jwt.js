@@ -1,28 +1,20 @@
+import jwt from "jsonwebtoken";
 
-import jwt from "jsonwebtoken"
-
-
-//funcion para crear un token cuando se necesite 
-export const createAccessToken= ((payload)=>{
-//creamos una promesa para 
-return new Promise((resolve , reject)=> {
-
-jwt.sign(
-
-    //llega el id del usuario a le que se le esta creando el token
-        payload ,
-        "toeknsecreto",
-        {
-            expiresIn : "1d"
-        },
-        (err , token)=> {
-            if(err) reject(err)
-            resolve(token)
+// Función para crear un token de acceso
+export const createAccessToken = (payload) => {
+  // Crear una promesa para el token
+  return new Promise((resolve, reject) => {
+    jwt.sign(
+      payload, // Datos del usuario que se incluirán en el token
+      "toeknsecreto", // Clave secreta para firmar el token
+      { expiresIn: "1d" }, // Configuración del token (expira en 1 día)
+      (err, token) => {
+        if (err) {
+          reject(err); // Rechazar la promesa si hay un error
+        } else {
+          resolve(token); // Resolver la promesa con el token generado
         }
-        
-    )
-
-
-})
-})
-    
+      }
+    );
+  });
+};
