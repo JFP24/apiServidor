@@ -79,7 +79,7 @@ server.listen(PORT, () => {
   // se conecta automaticamente a el topico de los hoteles
   connectAndFetchData();
 // createAdminUser()
-});
+});//
 
 // import fernet from 'fernet';
 
