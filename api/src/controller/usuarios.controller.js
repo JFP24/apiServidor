@@ -32,7 +32,7 @@ export const registroUsuarios = async (req, res) => {
       updateAt: userSaved.updatedAt
     };
 
-    res.cookies("token", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: true, // Solo seguro en producción
       sameSite: 'Strict'
@@ -50,7 +50,7 @@ export const registroUsuarios = async (req, res) => {
 export const login = async (req, res) => {
     try {
       const { email, password } = req.body;
-  
+  console.log(res)
       const findUser = await User.findOne({ email });
       if (!findUser) return res.status(400).json({ message: "Usuario/Contraseña Invalida" });
   
@@ -66,7 +66,7 @@ export const login = async (req, res) => {
         rol: findUser.rol,
       };
   
-      res.cookies("token", token, {
+      res.cookie("token", token, {
         httpOnly: true,
         secure: true, // Solo seguro en producción
         sameSite: 'Strict'
