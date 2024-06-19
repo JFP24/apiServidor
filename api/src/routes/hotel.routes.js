@@ -6,7 +6,7 @@ import { authRequired } from "../middlewares/validacionToken.middleware.js"
 import {validateRolClient} from "../middlewares/validateRol.middleware.js"
 router.get("/getHotel", authRequired,validateRolClient,getHotel)
 router.get("/hotel/:id",authRequired,validateRolClient, hotelById)
-router.post("/crearHotel/:id",authRequired,validateRolClient, crearHotel)
+router.post("/crearHotel",authRequired,validateRolClient, crearHotel)
 router.put("/updateHotel/:id", authRequired,validateRolClient,actualizarHotel)
 router.delete("/deleteHotel/:id",authRequired,validateRolClient, eliminarHotel)
 

@@ -7,7 +7,7 @@ export const getHotel = async (req, res)=> {
     try {
         //obtenemos la informacion de los hoteles con las habitaciones
         const hotelFind = await Hotel.find()  //.populate("habitaciones")
-     console.log(hotelFind)
+     //console.log(hotelFind)
         if(hotelFind.length === 0) return res.status(401).json({message: "por el momento no hay ningun hotel creado"})
         //mapeamos el arreglo y devolvemos uno nuevo con las propiedades que necesita el front
         const habitacionesId = hotelFind.map(e=>e.habitaciones)
@@ -69,14 +69,14 @@ export const crearHotel = async (req, res)=> {
        
             //obtenemos la informacion por el body
             const {nombre }= req.body
-          //  console.log(req.body)
+            console.log(req.body)
             if(!nombre) return res.status(400).json({message:"Tal vez te falten algunos espacios por llenar"})
-            const {id} = req.params
+            //const {id} = req.params
             //console.log(id)
-            //  //obtenemos el hotel al cual queremos guardar las habitaciones
-               const user = await Usuarios.findById(id);
-               console.log(user)
-               const creadoPor = user.username
+            //  //obtenemos el usuario al cual queremos guardar el hotel
+              // const user = await Usuarios.findById(id);
+              // console.log(user)
+           //    const creadoPor = user.username
             //creamos una instancia del proyecto
             const newHotel = new Hotel({
                 nombre  ,
@@ -89,15 +89,15 @@ export const crearHotel = async (req, res)=> {
              // console.log(user)
               
            //    //le agregamos al arreglo de las habitaciones las nuevas habitaciones que se van creando con el id
-           user.hotel.push(hotels._id)
+          // user.hotel.push(hotels._id)
            //    //guardamos las actualizaciones
-             await user.save()
+             //await user.save()
                 //console.log(hotels)
 
                 const frontHotels = {
                     id: hotels.id,
                     nombre : hotels.nombre,
-                    usuario : user.email,
+                    //usuario : user.email,
                     habitaciones : hotels.habitaciones,
                    
                 }
