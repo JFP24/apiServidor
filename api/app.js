@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import http from 'http';
+import https from 'https';
 import { Server } from 'socket.io';
 import cors from "cors";
 import { connectDb } from "./db.js";
@@ -15,7 +16,7 @@ import { connectAndFetchData  } from './src/controller/conectarPeriodica.js'; //
 
 const app = express();
 
-const server = http.createServer(app);
+const server = https.createServer(app);
 // const io = new Server(server, {
 //   cors: {
 //     origin: "http://localhost:5173",
