@@ -18,7 +18,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://clientservidor.onrender.com", // Asegúrate de que esto sea correcto
+    origin: "https://clientservidor.onrender.com",
     methods: ["GET", "POST"],
     credentials: true // Permitir cookies de origen cruzado
   }
@@ -31,36 +31,41 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-  origin: "https://clientservidor.onrender.com", // Asegúrate de que esto sea correcto
+  origin: "https://clientservidor.onrender.com",
   credentials: true // Permitir cookies de origen cruzado
 }));
+
+app.use((req, res, next) => {
+  console.log('Cookies: ', req.cookies);
+  next();
+});
 
 app.use("/api/v1", dimaster);
 app.use("/api/v1", habitaciones);
 app.use("/api/v1", hotel);
 app.use("/api/v1", usuarios);
 
-// const createAdminUser = async () => {
-//   try {
-//     const adminEmail = "diseven@diseven.com";
-//     const adminExists = await users.findOne({ email: adminEmail });
-//     const passwordHash = await bcrypt.hash("admin", 10);
-//     if (!adminExists) {
-//       const adminUser = new users({
-//         username: "admin",
-//         email: adminEmail,
-//         password: passwordHash, // Asegúrate de cifrar la contraseña antes de guardar
-//         rol: "Admin"
-//       });
-//       await adminUser.save();
-//       console.log("Usuario admin creado exitosamente.");
-//     } else {
-//       console.log("Usuario admin ya existe.");
-//     }
-//   } catch (error) {
-//     console.error("Error creando usuario admin:", error);
-//   }
-// };
+const createAdminUser = async () => {
+  try {
+    const adminEmail = "diseven@diseven.com";
+    const adminExists = await users.findOne({ email: adminEmail });
+    const passwordHash = await bcrypt.hash("admin", 10);
+    if (!adminExists) {
+      const adminUser = new users({
+        username: "admin",
+        email: adminEmail,
+        password: passwordHash, // Asegúrate de cifrar la contraseña antes de guardar
+        rol: "Admin"
+      });
+      await adminUser.save();
+      console.log("Usuario admin creado exitosamente.");
+    } else {
+      console.log("Usuario admin ya existe.");
+    }
+  } catch (error) {
+    console.error("Error creando usuario admin:", error);
+  }
+};
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
