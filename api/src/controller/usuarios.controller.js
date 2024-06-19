@@ -1,11 +1,13 @@
-import User from "../models/usuarios.models.js";
-import bcrypt from "bcryptjs";
-import { createAccessToken } from "../libs/jwt.js";
+import User from "../models/usuarios.models.js"
+import bcrypt from "bcryptjs"
+import { createAccessToken } from "../libs/jwt.js"
+import Habitaciones from "../models/habitaciones.models.js"
+import jwt from "jsonwebtoken";
 
 export const registroUsuarios = async (req, res) => {
   try {
     const { password, email, username, rol } = req.body;
-    if (!email || !password || !username) return res.status(400).json({ message: "Te faltan algunos espacios por llenar" });
+    if (!email || !password || !username) return res.status(400).json({ message: "Te faltan Algunos espacios por llenar" });
     
     const userFound = await User.findOne({ email });
     if (userFound) return res.status(400).json({ message: "El email que intentas utilizar ya se encuentra en uso, intenta con otro diferente" });
@@ -34,7 +36,7 @@ export const registroUsuarios = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true, // Solo seguro en producción
+      secure: process.env.NODE_ENV === 'production', // Solo seguro en producción
       sameSite: 'Strict'
     });
 
@@ -50,7 +52,7 @@ export const registroUsuarios = async (req, res) => {
 export const login = async (req, res) => {
     try {
       const { email, password } = req.body;
-  console.log(res)
+  
       const findUser = await User.findOne({ email });
       if (!findUser) return res.status(400).json({ message: "Usuario/Contraseña Invalida" });
   
@@ -68,7 +70,7 @@ export const login = async (req, res) => {
   
       res.cookie("token", token, {
         httpOnly: true,
-        secure: true, // Solo seguro en producción
+        secure: process.env.NODE_ENV === 'production', // Solo seguro en producción
         sameSite: 'Strict'
       });
   
@@ -79,13 +81,11 @@ export const login = async (req, res) => {
     }
   };
   
-  
-  
 
 
 export const logout = async (req, res)=> {
     try {
-        res.cookies("token", "", {
+        res.cookie("token", "", {
             expires: new Date(0)
         })
         return res.sendStatus(200)
@@ -94,87 +94,96 @@ export const logout = async (req, res)=> {
     }
 }
 
-export const profile = async (req, res) => {
+export const profile = async (req, res)=>{
     try {
-      const { token } = req.cookies;
-      if (!token) return res.status(401).json({ message: "Unauthorized" });
-  
-      jwt.verify(token, "toeknsecreto", async (err, decoded) => {
-        if (err) return res.status(401).json({ message: "Unauthorized" });
-  
-        const userFound = await User.findById(decoded.id).populate("hotel");
-        if (!userFound) return res.status(400).json({ message: "Usuario no encontrado" });
-  
-        const habi = userFound.hotel.map(e => e.habitaciones);
-  
+        const {id} = req.params
+        console.log(id)
+        //obtenemos la informacion del usuario cuando este logueado
+       const userFound = await User.findById(id).populate("hotel")
+      // console.log(userFound)
+       if(!userFound) return res.status(400).json({message : "Usuario no encontrado"})
+        const habi = userFound.hotel.map(e=> {return e.habitaciones})
+
+     //  console.log(habi)
+    
         const obtenerHabitaciones = async () => {
-          const lista = [];
-  
-          await Promise.all(habi.map(async (objectId) => {
-            const habitaciones = await Promise.all(objectId.map(async (element) => {
-              const habiDos = await Habitaciones.findById(element);
-              return habiDos;
+            const lista = [];
+          
+            await Promise.all(habi.map(async (objectId) => {
+              const habitaciones = await Promise.all(objectId.map(async (element) => {
+                const habiDos = await Habitaciones.findById(element);
+                return habiDos;
+              }));
+          
+              // Filtrar resultados nulos antes de agregarlos a la lista
+              const habitacionesFiltradas = habitaciones.filter(habitacion => habitacion !== null);
+              lista.push(...habitacionesFiltradas);
             }));
-  
-            const habitacionesFiltradas = habitaciones.filter(habitacion => habitacion !== null);
-            lista.push(...habitacionesFiltradas);
-          }));
-  
-          return lista;
-        };
-  
-        obtenerHabitaciones()
-          .then((resultado) => {
-            const frontHotel = userFound.hotel.map((e) => {
-              return {
-                id: e._id,
-                nombre: e.nombre,
-                habitaciones: resultado
-              };
-            });
-  
-            const userProfile = {
-              id: userFound._id,
-              username: userFound.username,
-              email: userFound.email,
-              rol: userFound.rol,
-              hotel: frontHotel
-            };
-  
-            return res.status(202).json({ userProfile });
-          });
-      });
+          
+            return lista;
+          };
+          
+          obtenerHabitaciones()
+            .then((resultado) => {
+            //  console.log(resultado);
+              // Aquí puedes hacer lo que necesites con la lista de habitaciones
+              const frontHotel = userFound.hotel.map((e) => {
+                return {
+                  id: e._id,
+                  nombre: e.nombre,
+                  habitaciones: resultado
+                };
+              });
+          
+              // Aquí puedes usar `frontHotel` como necesites
+              const userProfile = {
+                id : userFound._id,
+                username : userFound.username ,
+                email : userFound.email,
+                password : userFound.password,
+                rol : userFound.rol,
+                hotel : frontHotel
+        
+        
+              }
+               //  console.log(userProfile)
+                return res.status(202).json({userProfile})
+            })
+        
+    
+      
+        
+
+
     } catch (error) {
-      console.log(error);
-      return res.status(404).json({ message: "Error from profile" });
+        console.log(error)
+        return res.status(404).json({message : "Error from profile"})
     }
-  };
-  
+}
 
 
-  export const verifyToken = async (req, res) => {
+export const verifyToken = async (req, res)=> {
     try {
-      const { token } = req.cookies;
-      if (!token) return res.status(401).json({ message: "Unauthorized" });
-  
-      jwt.verify(token, "toeknsecreto", async (err, decoded) => {
-        if (err) return res.status(401).json({ message: "Unauthorized" });
-  
-        const userFound = await User.findById(decoded.id);
-        if (!userFound) return res.status(401).json({ message: "Unauthorized" });
-  
-        return res.json({
-          id: userFound._id,
-          username: userFound.username,
-          email: userFound.email
-        });
-      });
+        const {token}= req.cookies
+        console.log(token)
+        if(!token) return res.status(401).json({message:"Unauthorized"})
+        jwt.verify(token, "toeknsecreto", async  (err,user)=>{
+            if(err) return res.status(401).json({message:"Unauthorized"})
+            const userFound = await User.findById(user.id)
+            if(!userFound) return res.status(401).json({message:"Unauthorized"})
+            return res.json({
+                id: userFound._id,
+                username :userFound.username,
+                email : userFound.email
+            })
+        })
+
     } catch (error) {
-      console.log(error);
-      return res.status(401).json({ message: "Error from verify" });
+        console.log(error)
+        return res.status(401).json({message:"Error from verify"})
     }
-  };
-  
+}
+
 
 export const getUsuarios = async (req, res)=> {
     try {

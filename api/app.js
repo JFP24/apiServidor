@@ -35,10 +35,6 @@ app.use(cors({
   credentials: true // Permitir cookies de origen cruzado
 }));
 
-app.use((req, res, next) => {
-  console.log('Cookies in Request:', req);
-  next();
-});
 
 app.use("/api/v1", dimaster);
 app.use("/api/v1", habitaciones);
