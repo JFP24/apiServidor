@@ -1,20 +1,20 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
-// Función para crear un token de acceso
-export const createAccessToken = (payload) => {
-  // Crear una promesa para el token
-  return new Promise((resolve, reject) => {
-    jwt.sign(
-      payload, // Datos del usuario que se incluirán en el token
-      "toeknsecreto", // Clave secreta para firmar el token
-      { expiresIn: "1d" }, // Configuración del token (expira en 1 día)
-      (err, token) => {
-        if (err) {
-          reject(err); // Rechazar la promesa si hay un error
-        } else {
-          resolve(token); // Resolver la promesa con el token generado
-        }
-      }
-    );
-  });
+export const authRequired = (req, res, next) => {
+  try {
+    const { token } = req.cookies;
+    console.log('Token from cookies:', token);
+
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    jwt.verify(token, "toeknsecreto", (err, user) => {
+      if (err) return res.status(401).json({ message: "Token inválido" });
+
+      req.user = user;
+      next();
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(404).json({ message: "Error en middleware authRequired" });
+  }
 };

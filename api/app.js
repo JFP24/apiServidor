@@ -36,7 +36,7 @@ app.use(cors({
 }));
 
 app.use((req, res, next) => {
-  console.log('Cookies: ', req.cookies);
+  console.log('Cookies in Request:', req.cookies);
   next();
 });
 
