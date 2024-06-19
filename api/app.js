@@ -81,7 +81,22 @@ server.listen(PORT, () => {
 
 });
 
+import fernet from 'fernet';
 
+const secret = new fernet.Secret("xshaRo1BvCdBhXhSbQsIBKNvyzZ2ouqx2UPa36az6eU=");
+const token = new fernet.Token({
+  secret: secret,
+  token: 'gAAAAABmcxXRCAyPIOTqCIKfwA6Gwfa4H6vqeAUgMY6JuExX-bMrxkb1GVugRV7iwNpSBJgVX6PnLGMTQ4oOLhr3FhBaAhtAjsXGxt5LK6InwMjGT_dCilZ9V0rJWOk6MghciyBaUBaucTWsrj5T6xq4YXZSLrWKrY5Lf9Tu4nrCThuLkFDkn8J389Eu0UcYMhTQwH4WCYERWNru4vEgPrD3cu8ZwTiuZ9O1XSaLlwn55q2XkfwtW1bUBW7rc1TPayNFzkePWo30b_RscrRBlRg0sa0BvMqRO_OrCCVGkTeWBCvC6KOpVz1QR0YAAxPYBtlSV9U3svMW3zvvkQTSU-2DAN_e38rQTPo0zGkH4Ae8s0v1UUEitrh-R1IwbTS-7Os-ZpGZyiVKGWkodI_9S6eOxdyM05xUUHqk9zZH29_jwqW8Szs3oC72UXQ2sX1ukzgiI9wk9HqJey6DujaqhzjRQ-tXwXebs2O26Uu8RnVzlg_X5uGbYmjjYx6UnnkzPTKudN9cFsnS',
+  ttl: 0
+});
+
+const decodedMessage = token.decode();
+try {
+  const jsonMessage = JSON.parse(decodedMessage);
+  console.log(jsonMessage);
+} catch (error) {
+  console.error("Error parsing JSON:", error);
+}
 
 
 connectDb();

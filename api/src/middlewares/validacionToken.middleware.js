@@ -7,6 +7,8 @@ export const authRequired = (req, res, next )=> {
 try {
     //extraemos el token de las cookies 
     const {token} = req.cookies
+    console.log(req.cookies)
+    console.log(token, "este es el tekn ")
     //validamos que si entre el token
     if(!token) return res.status(401).json({message: "Acceso denegado, no estas logueado"})
     //verificamos que el token sea valido

@@ -36,6 +36,7 @@ const user = {
     username : userSaved.username,
     email : userSaved.email,
     rol :userSaved.rol,
+    token :token,
     createAt : userSaved.createdAt,
     updateAt: userSaved.updatedAt
 }
@@ -99,8 +100,10 @@ export const logout = async (req, res)=> {
 
 export const profile = async (req, res)=>{
     try {
+        const {id} = req.params
+        console.log(id)
         //obtenemos la informacion del usuario cuando este logueado
-       const userFound = await User.findById(req.user.id).populate("hotel")
+       const userFound = await User.findById(id).populate("hotel")
       // console.log(userFound)
        if(!userFound) return res.status(400).json({message : "Usuario no encontrado"})
         const habi = userFound.hotel.map(e=> {return e.habitaciones})

@@ -51,7 +51,7 @@ export const connectAndFetchData = () => {
                     fecha: evento.fecha,
                     hora: evento.hora,
                     hotel: evento.Hotel,
-                    numeroHabitacion: evento.Hab
+                    numeroHabitacion: evento.Hab // Mantén este campo para la creación de la habitación
                 }));
 
                 console.log('Eventos válidos:', eventosValidos);
@@ -77,15 +77,15 @@ export const connectAndFetchData = () => {
                     // Verificar y actualizar habitación si corresponde
                     for (let evento of eventosValidos) {
                         if (['lavanderia', 'checkin', 'puerta', 'housekeeping', 'occupation', 'noMolestar'].includes(evento.nameEvent)) {
-                            let habitacion = await Habitacion.findOne({ numeroHabitacion: evento.numeroHabitacion });
+                            let habitacion = await Habitacion.findOne({ habitacionID: ID });
 
                             if (habitacion) {
                                 // Actualizar la habitación existente
                                 habitacion[evento.nameEvent] = evento.value;
                                 await habitacion.save();
                                 console.log('Habitación actualizada:', habitacion);
-                                io.emit('updateLavanderia', { id: habitacion.habitacionID, valor: habitacion.lavanderia });
-                                io.emit('updateNoMolestar', { id: habitacion.habitacionID, valor: habitacion.noMolestar });
+                                io.emit('updateLavanderia', { habitacionID: habitacion.habitacionID, valor: habitacion.lavanderia });
+                                io.emit('updateNoMolestar', { habitacionID: habitacion.habitacionID, valor: habitacion.noMolestar });
                             } else {
                                 // Crear una nueva habitación si no existe
                                 habitacion = new Habitacion({
