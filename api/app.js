@@ -11,14 +11,17 @@ import hotel from "./src/routes/hotel.routes.js";
 import usuarios from "./src/routes/usuarios.routes.js";
 import dimaster from "./src/routes/dimaster.routes.js";
 import users from "./src/models/usuarios.models.js";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
 import { connectAndFetchData } from './src/controller/conectarPeriodica.js'; // Importa la función para tareas periódicas
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
-// Lee los certificados SSL
-const privateKey = fs.readFileSync('C:\\Users\\jfgp2\\key.pem', 'utf8');
-const certificate = fs.readFileSync('C:\\Users\\jfgp2\\cert.pem', 'utf8');
+// Lee los certificados SSL desde variables de entorno
+const privateKey = Buffer.from(process.env.SSL_KEY_BASE64, 'base64').toString('utf-8');
+const certificate = Buffer.from(process.env.SSL_CERT_BASE64, 'base64').toString('utf-8');
 
 const credentials = {
   key: privateKey,
@@ -50,36 +53,14 @@ app.use("/api/v1", habitaciones);
 app.use("/api/v1", hotel);
 app.use("/api/v1", usuarios);
 
-// const createAdminUser = async () => {
-//   try {
-//     const adminEmail = "diseven@diseven.com";
-//     const adminExists = await users.findOne({ email: adminEmail });
-//     const passwordHash = await bcrypt.hash("admin", 10)
-//     if (!adminExists) {
-//       const adminUser = new users({
-//         username: "admin",
-//         email: adminEmail,
-//         password: passwordHash, // Asegúrate de cifrar la contraseña antes de guardar
-//         rol: "Admin"
-//       });
-//       await adminUser.save();
-//       console.log("Usuario admin creado exitosamente.");
-//     } else {
-//       console.log("Usuario admin ya existe.");
-//     }
-//   } catch (error) {
-//     console.error("Error creando usuario admin:", error);
-//   }
-// };
-
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 
   // se conecta automaticamente a el topico de los hoteles
   connectAndFetchData();
-// createAdminUser()
-});//
+  // createAdminUser()
+});
 
 // import fernet from 'fernet';
 
