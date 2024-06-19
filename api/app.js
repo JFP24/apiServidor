@@ -10,22 +10,17 @@ import hotel from "./src/routes/hotel.routes.js";
 import usuarios from "./src/routes/usuarios.routes.js";
 import dimaster from "./src/routes/dimaster.routes.js";
 import users from "./src/models/usuarios.models.js";
-import bcrypt from "bcryptjs"
-import { connectAndFetchData  } from './src/controller/conectarPeriodica.js'; // Importa la función para tareas periódicas
+import bcrypt from "bcryptjs";
+import { connectAndFetchData } from './src/controller/conectarPeriodica.js'; // Importa la función para tareas periódicas
 
 const app = express();
 
 const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: "http://localhost:5173",
-//     methods: ["GET", "POST"]
-//   }
-// });
 const io = new Server(server, {
   cors: {
-    origin: "https://clientservidor.onrender.com",
-    methods: ["GET", "POST"]
+    origin: "https://clientservidor.onrender.com", // Asegúrate de que esto sea correcto
+    methods: ["GET", "POST"],
+    credentials: true // Permitir cookies de origen cruzado
   }
 });
 
@@ -34,13 +29,10 @@ app.use(morgan("dev"));
 // express.json me deja leer objetos json en las rutas
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   credentials: true
-// }));
+
 app.use(cors({
-  origin: "https://clientservidor.onrender.com",
-  credentials: true
+  origin: "https://clientservidor.onrender.com", // Asegúrate de que esto sea correcto
+  credentials: true // Permitir cookies de origen cruzado
 }));
 
 app.use("/api/v1", dimaster);
@@ -52,7 +44,7 @@ app.use("/api/v1", usuarios);
 //   try {
 //     const adminEmail = "diseven@diseven.com";
 //     const adminExists = await users.findOne({ email: adminEmail });
-//     const passwordHash = await bcrypt.hash("admin", 10)
+//     const passwordHash = await bcrypt.hash("admin", 10);
 //     if (!adminExists) {
 //       const adminUser = new users({
 //         username: "admin",
@@ -70,15 +62,13 @@ app.use("/api/v1", usuarios);
 //   }
 // };
 
-
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 
   // se conecta automaticamente a el topico de los hoteles
   connectAndFetchData();
-//createAdminUser()
-
+  // createAdminUser();
 });
 
 import fernet from 'fernet';
@@ -97,7 +87,6 @@ try {
 } catch (error) {
   console.error("Error parsing JSON:", error);
 }
-
 
 connectDb();
 export { app, io };
