@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import http from 'http';
+import fs from 'fs';
 import https from 'https';
 import { Server } from 'socket.io';
 import cors from "cors";
@@ -12,17 +12,22 @@ import usuarios from "./src/routes/usuarios.routes.js";
 import dimaster from "./src/routes/dimaster.routes.js";
 import users from "./src/models/usuarios.models.js";
 import bcrypt from "bcryptjs"
-import { connectAndFetchData  } from './src/controller/conectarPeriodica.js'; // Importa la función para tareas periódicas
+import { connectAndFetchData } from './src/controller/conectarPeriodica.js'; // Importa la función para tareas periódicas
 
 const app = express();
 
-const server = https.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: "http://localhost:5173",
-//     methods: ["GET", "POST"]
-//   }
-// });
+// Lee los certificados SSL
+const privateKey = fs.readFileSync('C:\\Users\\jfgp2\\key.pem', 'utf8');
+const certificate = fs.readFileSync('C:\\Users\\jfgp2\\cert.pem', 'utf8');
+
+const credentials = {
+  key: privateKey,
+  cert: certificate
+};
+
+// Crea el servidor HTTPS
+const server = https.createServer(credentials, app);
+
 const io = new Server(server, {
   cors: {
     origin: "https://clientservidor.onrender.com",
@@ -35,10 +40,6 @@ app.use(morgan("dev"));
 // express.json me deja leer objetos json en las rutas
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   credentials: true
-// }));
 app.use(cors({
   origin: "https://clientservidor.onrender.com",
   credentials: true
@@ -71,15 +72,13 @@ app.use("/api/v1", usuarios);
 //   }
 // };
 
-
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 
   // se conecta automaticamente a el topico de los hoteles
   connectAndFetchData();
-//createAdminUser()
-
+// createAdminUser()
 });
 
 // import fernet from 'fernet';
@@ -98,7 +97,6 @@ server.listen(PORT, () => {
 // } catch (error) {
 //   console.error("Error parsing JSON:", error);
 // }
-
 
 connectDb();
 export { app, io };
