@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 export const authRequired = (req, res, next) => {
   try {
     const { token } = req.cookies;
+    console.log('Token from cookies:', token);
+
     if (!token) return res.status(401).json({ message: "Unauthorized" });
 
     jwt.verify(token, "toeknsecreto", (err, user) => {
