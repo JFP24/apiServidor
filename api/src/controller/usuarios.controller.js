@@ -32,7 +32,7 @@ export const registroUsuarios = async (req, res) => {
       updateAt: userSaved.updatedAt
     };
 
-    res.cookie("token", token, {
+    res.cookies("token", token, {
       httpOnly: true,
       secure: true, // Solo seguro en producción
       sameSite: 'Strict'
@@ -66,7 +66,7 @@ export const login = async (req, res) => {
         rol: findUser.rol,
       };
   
-      res.cookie("token", token, {
+      res.cookies("token", token, {
         httpOnly: true,
         secure: true, // Solo seguro en producción
         sameSite: 'Strict'
@@ -85,7 +85,7 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res)=> {
     try {
-        res.cookie("token", "", {
+        res.cookies("token", "", {
             expires: new Date(0)
         })
         return res.sendStatus(200)
