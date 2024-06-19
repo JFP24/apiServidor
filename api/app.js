@@ -17,7 +17,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://clientservidor.onrender.com/",
+    origin: "https://clientservidor.onrender.com",
     methods: ["GET", "POST"]
   }
 });
@@ -28,7 +28,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: "https://clientservidor.onrender.com/",
+  origin: "https://clientservidor.onrender.com",
   credentials: true
 }));
 
