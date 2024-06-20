@@ -34,9 +34,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "https://clientservidor.onrender.com",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    methods: ["GET", "POST"]
   }
 });
 
@@ -45,6 +43,7 @@ app.use(morgan("dev"));
 // express.json me deja leer objetos json en las rutas
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(cors({
   origin: "https://clientservidor.onrender.com",
   methods: ["GET", "POST"],
