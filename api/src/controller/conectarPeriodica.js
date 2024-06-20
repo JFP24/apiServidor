@@ -86,6 +86,9 @@ export const connectAndFetchData = () => {
                                 console.log('Habitación actualizada:', habitacion);
                                 io.emit('updateLavanderia', { habitacionID: habitacion.habitacionID, valor: habitacion.lavanderia });
                                 io.emit('updateNoMolestar', { habitacionID: habitacion.habitacionID, valor: habitacion.noMolestar });
+                                io.emit('puerta', { habitacionID: habitacion.habitacionID, valor: habitacion.puerta });
+                                io.emit('housekepping', { habitacionID: habitacion.habitacionID, valor: habitacion.houseKeeping });
+                                io.emit('checkin', { habitacionID: habitacion.habitacionID, valor: habitacion.checkin });
                             } else {
                                 // Crear una nueva habitación si no existe
                                 habitacion = new Habitacion({
