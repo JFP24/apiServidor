@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const habitacionSchema = new mongoose.Schema({
     habitacionID : {
         type : String,
-        required : true,
+        //required : true,
     },
     numeroHabitacion : {
         type : String,
