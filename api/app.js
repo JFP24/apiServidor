@@ -3,6 +3,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import fs from 'fs';
 import https from 'https';
+import http from 'https';
 import { Server } from 'socket.io';
 import cors from "cors";
 import { connectDb } from "./db.js";
@@ -29,7 +30,7 @@ const credentials = {
 };
 
 // Crea el servidor HTTPS
-const server = https.createServer(credentials, app);
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "https://clientservidor.onrender.com",
