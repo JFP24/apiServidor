@@ -40,7 +40,11 @@ const user = {
     updateAt: userSaved.updatedAt
 }
 //creamos una cookie con el token para guardar la sesion
- res.cookie("token" , token)
+res.cookie("token", token, {
+    httpOnly: true,
+    secure: true, // Asegúrate de que esto está configurado a true si estás usando HTTPS
+    sameSite: 'none' // Esto permite que las cookies se envíen entre sitios
+  });
  //response message and user
  return res.status(202).json({message : "Usuario creado correctamente" , user})
     }catch(error){
@@ -75,7 +79,11 @@ const user = {
              //creamos el token con el id
     const token = await createAccessToken({id: findUser._id})
     //retornamos la cookie con el token
-    res.cookie("token", token )
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: true, // Asegúrate de que esto está configurado a true si estás usando HTTPS
+        sameSite: 'none' // Esto permite que las cookies se envíen entre sitios
+      });
     //retornamos la inforamcion del usuario
     return res.status(202).json({user})
         } catch (error) {

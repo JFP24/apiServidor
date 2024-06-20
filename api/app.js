@@ -42,8 +42,9 @@ app.use(cookieParser());
 // }));
 app.use(cors({
   origin: "https://clientservidor.onrender.com",
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use("/api/v1", dimaster);
