@@ -76,7 +76,7 @@ export const connectAndFetchData = () => {
 
                     // Verificar y actualizar habitación si corresponde
                     for (let evento of eventosValidos) {
-                        if (['lavanderia', 'checkin', 'puerta', 'housekeeping', 'estado', 'noMolestar'].includes(evento.nameEvent)) {
+                        if (['lavanderia', 'checkin', 'puerta', 'houseKeeping', 'estado', 'noMolestar'].includes(evento.nameEvent)) {
                             let habitacion = await Habitacion.findOne({ habitacionID: ID });
 
                             if (habitacion) {
