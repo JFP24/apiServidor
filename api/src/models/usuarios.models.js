@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     },
     rol : {
         type : String,
-       default: "Admin"
+       default: "usuario"
     },
 
     hotel : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' }]

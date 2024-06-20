@@ -29,8 +29,8 @@ const habitacionSchema = new mongoose.Schema({
        // required : true,     
     },
     estado : {
-        type :String,
-       default: "desocupada",
+        type :Number,
+       default: 0,
        //required : true,
     },
 
