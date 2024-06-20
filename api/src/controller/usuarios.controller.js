@@ -36,6 +36,7 @@ const user = {
     username : userSaved.username,
     email : userSaved.email,
     rol :userSaved.rol,
+    token : token
     createAt : userSaved.createdAt,
     updateAt: userSaved.updatedAt
 }
@@ -70,15 +71,17 @@ res.cookie("token", token, {
              //si la contraseña es incorrecta mandamos un mensaje de error
              if(!passwordCompare) return res.status(400).json({message:"Contraseña Incorrecta"})
             //creamos un objeto con la inforamcion del usuario para el frontend
+            const token = await createAccessToken({id: findUser._id})
             const user = {
                 id: findUser._id,
                 username : findUser.username,
                 email : findUser.email,
                 rol : findUser.rol,
+                token : token
             }
             console.log(user)
              //creamos el token con el id
-    const token = await createAccessToken({id: findUser._id})
+   
     //retornamos la cookie con el token
     res.cookie("token", token, {
         httpOnly: true,
