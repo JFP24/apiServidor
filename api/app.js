@@ -47,7 +47,7 @@ app.use(cookieParser());
 app.use(cors({
   origin: "https://clientservidor.onrender.com",
   methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+ // allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
