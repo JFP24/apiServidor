@@ -36,7 +36,7 @@ const user = {
     username : userSaved.username,
     email : userSaved.email,
     rol :userSaved.rol,
-    token : token
+    token : token,
     createAt : userSaved.createdAt,
     updateAt: userSaved.updatedAt
 }
