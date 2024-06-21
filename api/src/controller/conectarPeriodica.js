@@ -63,7 +63,7 @@ export const connectAndFetchData = () => {
                         // Añadir nuevos eventos al array de eventos existente
                         respuesta.eventos = [...respuesta.eventos, ...eventosValidos];
                         await respuesta.save();
-                        console.log('Respuesta actualizada:', respuesta);
+                      //  console.log('Respuesta actualizada:', respuesta);
                     } else {
                         // Crear un nuevo documento si no existe
                         const nuevaRespuesta = new Respuesta({
@@ -71,7 +71,7 @@ export const connectAndFetchData = () => {
                             eventos: eventosValidos
                         });
                         await nuevaRespuesta.save();
-                        console.log('Nueva respuesta creada:', nuevaRespuesta);
+                    //    console.log('Nueva respuesta creada:', nuevaRespuesta);
                     }
 
                     // Verificar y actualizar habitación si corresponde

@@ -44,7 +44,7 @@ const user = {
 res.cookie("token", token, {
     httpOnly: true,
     secure: true, // Asegúrate de que esto está configurado a true si estás usando HTTPS
-    sameSite: 'none',
+    sameSite: 'None',
     maxAge: 24 * 60 * 60 * 1000 // Esto permite que las cookies se envíen entre sitios
   });
  //response message and user
@@ -86,7 +86,7 @@ res.cookie("token", token, {
     res.cookie("token", token, {
         httpOnly: true,
         secure: true, // Asegúrate de que esto está configurado a true si estás usando HTTPS
-        sameSite: 'none',
+        sameSite: 'None',
         maxAge: 24 * 60 * 60 * 1000 // Esto permite que las cookies se envíen entre sitios
       });
     //retornamos la inforamcion del usuario

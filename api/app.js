@@ -16,36 +16,36 @@ import { connectAndFetchData  } from './src/controller/conectarPeriodica.js'; //
 const app = express();
 
 const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: "http://localhost:5173",
-//     methods: ["GET", "POST"]
-//   }
-// });
 const io = new Server(server, {
   cors: {
-    origin: "https://clientservidor.onrender.com",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
   }
 });
+// const io = new Server(server, {
+//   cors: {
+//     origin: "https://clientservidor.onrender.com",
+//     methods: ["GET", "POST"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true
+//   }
+// });
 
 // Morgan me devuelve los estados de nuestras peticiones http
 app.use(morgan("dev"));
 // express.json me deja leer objetos json en las rutas
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   credentials: true
-// }));
 app.use(cors({
-  origin: "https://clientservidor.onrender.com",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  origin: "http://localhost:5173",
+  credentials: true
 }));
+// app.use(cors({
+//   origin: "https://clientservidor.onrender.com",
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+//   allowedHeaders: ["Content-Type", "Authorization"]
+// }));
 
 app.use("/api/v1", dimaster);
 app.use("/api/v1", habitaciones);
