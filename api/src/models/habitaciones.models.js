@@ -65,6 +65,12 @@ const habitacionSchema = new mongoose.Schema({
         required : true,
         default : 0
     },
+    miniBar: {
+        type : Number,
+        required : true,
+        default : 0
+    },
+
 
     
     hotel : { type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' },

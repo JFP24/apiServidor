@@ -7,10 +7,12 @@ import { io } from '../../app.js'; // Importa la instancia de io desde app.js
 // Función que conecta al tópico y filtra la información para la base de datos
 export const connectAndFetchData = () => {
     const mqttOptions = {
-        host: "diseven7v2.disevenapp.com",
+        host: "diseven7.disevenapp.com",
         port: 1884,
-        username: 'UserdataHoteles',
-        password: 'passdataHotelesd1s3v3n777'
+        // username: 'UserdataHoteles',
+        // password: 'passdataHotelesd1s3v3n777',
+        username: '00000000c0029b4db6adadmin',
+        password: '00000000c0029b4db6adadmin'
     };
 
     const topic = "dataHoteles";
@@ -76,11 +78,12 @@ export const connectAndFetchData = () => {
 
                     // Verificar y actualizar habitación si corresponde
                     for (let evento of eventosValidos) {
-                        if (['lavanderia', 'checkin', 'puerta', 'houseKeeping', 'estado', 'noMolestar'].includes(evento.nameEvent)) {
+                        if (['lavanderia', 'checkin', 'puerta', 'houseKeeping', 'estado', 'noMolestar', 'miniBar'].includes(evento.nameEvent)) {
                             let habitacion = await Habitacion.findOne({ habitacionID: ID });
-
+                           // 
                             if (habitacion) {
                                 // Actualizar la habitación existente
+                                console.log(evento.value)
                                 habitacion[evento.nameEvent] = evento.value;
                                 await habitacion.save();
                                 console.log('Habitación actualizada:', habitacion);
@@ -90,6 +93,7 @@ export const connectAndFetchData = () => {
                                 io.emit('puerta', { habitacionID: habitacion.habitacionID, valor: habitacion.puerta });
                                 io.emit('housekeeping', { habitacionID: habitacion.habitacionID, valor: habitacion.houseKeeping });
                                 io.emit('checkin', { habitacionID: habitacion.habitacionID, valor: habitacion.checkin });
+                                io.emit('miniBar', { habitacionID: habitacion.habitacionID, valor: habitacion.miniBar });
                             } else {
                                 // Crear una nueva habitación si no existe
                                 habitacion = new Habitacion({
@@ -128,3 +132,4 @@ export const connectAndFetchData = () => {
         client.end();
     });
 };
+    
