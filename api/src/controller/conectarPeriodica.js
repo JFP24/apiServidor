@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Habitacion from '../models/habitaciones.models.js';
 import Respuesta from '../models/respuesta.models.js';
 import Hotel from "../models/hotel.models.js";
@@ -20,14 +21,14 @@ const processQueue = async () => {
 
     try {
         const messageJSON = JSON.parse(message.toString());
-        console.log(messageJSON.data[0].value);
+        console.log("Mensaje recibido:", messageJSON.data[0].value);
         const mensaje = messageJSON.data[0].value;
 
         const { ID, Eventos } = mensaje;
 
         if (Eventos && Array.isArray(Eventos)) {
             const eventosValidos = Eventos.filter(evento => {
-                if (evento.NameEvent && evento.value && evento.fecha && evento.hora && evento.Hab) {
+                if (evento.Hab && evento.Hotel && evento.NameEvent && evento.value && evento.fecha && evento.hora) {
                     return true;
                 } else {
                     console.warn(`Evento inválido: ${JSON.stringify(evento)}`);
@@ -36,7 +37,7 @@ const processQueue = async () => {
             }).map(evento => ({
                 nameEvent: evento.NameEvent,
                 value: evento.value,
-                fecha: evento.fecha,
+                fecha: new Date(evento.fecha), // Asegura que la fecha sea del tipo Date
                 hora: evento.hora,
                 hotel: evento.Hotel,
                 numeroHabitacion: evento.Hab // Mantén este campo para la creación de la habitación
@@ -44,57 +45,49 @@ const processQueue = async () => {
 
             console.log('Eventos válidos:', eventosValidos);
 
-            try {
-                let respuesta = await Respuesta.findOne({ dimasterID: ID });
+            const session = await mongoose.startSession();
+            session.startTransaction();
 
-                if (respuesta) {
-                    respuesta.eventos = [...respuesta.eventos, ...eventosValidos];
-                    await respuesta.save();
-                    //console.log('Respuesta actualizada:', respuesta);
-                } else {
-                    const nuevaRespuesta = new Respuesta({
-                        dimasterID: ID,
-                        eventos: eventosValidos
-                    });
-                    await nuevaRespuesta.save();
-                    console.log('Nueva respuesta creada:', nuevaRespuesta);
-                }
+            try {
+                let respuesta = await Respuesta.findOneAndUpdate(
+                    { dimasterID: ID },
+                    { $push: { eventos: { $each: eventosValidos } } },
+                    { new: true, upsert: true, session }
+                );
 
                 for (let evento of eventosValidos) {
                     if (['lavanderia', 'checkin', 'puerta', 'houseKeeping', 'estado', 'noMolestar', 'miniBar'].includes(evento.nameEvent)) {
-                        let habitacion = await Habitacion.findOne({ habitacionID: ID });
+                        let habitacion = await Habitacion.findOneAndUpdate(
+                            { habitacionID: ID },
+                            { $set: { [evento.nameEvent]: evento.value } },
+                            { new: true, upsert: true, session }
+                        );
 
-                        if (habitacion) {
-                            habitacion[evento.nameEvent] = evento.value;
-                            console.log(evento.value);
-                            await habitacion.save();
-                            console.log('Habitación actualizada:', habitacion);
-                            io.emit('estado', { habitacionID: habitacion.habitacionID, valor: habitacion.estado });
-                            io.emit('updateLavanderia', { habitacionID: habitacion.habitacionID, valor: habitacion.lavanderia });
-                            io.emit('updateNoMolestar', { habitacionID: habitacion.habitacionID, valor: habitacion.noMolestar });
-                            io.emit('puerta', { habitacionID: habitacion.habitacionID, valor: habitacion.puerta });
-                            io.emit('housekeeping', { habitacionID: habitacion.habitacionID, valor: habitacion.houseKeeping });
-                            io.emit('checkin', { habitacionID: habitacion.habitacionID, valor: habitacion.checkin });
-                            io.emit('miniBar', { habitacionID: habitacion.habitacionID, valor: habitacion.miniBar });
-                        } else {
-                            habitacion = new Habitacion({
-                                habitacionID: ID,
-                                numeroHabitacion: evento.numeroHabitacion,
-                                [`${evento.nameEvent}`]: evento.value
-                            });
-                            await habitacion.save();
-                            console.log('Nueva habitación creada:', habitacion);
+                        console.log(evento.value);
 
-                            let hotel = await Hotel.findOne({ nombre: evento.hotel });
-                            if (hotel) {
-                                hotel.habitaciones.push(habitacion._id);
-                                await hotel.save();
-                                console.log(`Habitación agregada al hotel: ${hotel.nombre}`);
-                            }
-                        }
+                        io.emit('estado', { habitacionID: habitacion.habitacionID, valor: habitacion.estado });
+                        io.emit('updateLavanderia', { habitacionID: habitacion.habitacionID, valor: habitacion.lavanderia });
+                        io.emit('updateNoMolestar', { habitacionID: habitacion.habitacionID, valor: habitacion.noMolestar });
+                        io.emit('puerta', { habitacionID: habitacion.habitacionID, valor: habitacion.puerta });
+                        io.emit('housekeeping', { habitacionID: habitacion.habitacionID, valor: habitacion.houseKeeping });
+                        io.emit('checkin', { habitacionID: habitacion.habitacionID, valor: habitacion.checkin });
+                        io.emit('miniBar', { habitacionID: habitacion.habitacionID, valor: habitacion.miniBar });
+
+                        let hotel = await Hotel.findOneAndUpdate(
+                            { nombre: evento.hotel },
+                            { $addToSet: { habitaciones: habitacion._id } },
+                            { new: true, session }
+                        );
+                        console.log(`Habitación agregada al hotel: ${hotel.nombre}`);
                     }
                 }
+
+                await session.commitTransaction();
+                session.endSession();
+
             } catch (error) {
+                await session.abortTransaction();
+                session.endSession();
                 console.error('Error al guardar los datos en MongoDB:', error);
             }
 
@@ -112,6 +105,7 @@ const processQueue = async () => {
 
 // Función que conecta al tópico y filtra la información para la base de datos
 export const connectAndFetchData = () => {
+
 const mqttOptions = {
     host: "diseven7.disevenapp.com",
     port: 1884,
@@ -119,8 +113,7 @@ const mqttOptions = {
     // password: 'passdataHotelesd1s3v3n777',
     username: '00000000c0029b4db6adadmin',
     password: '00000000c0029b4db6adadmin',
-};
-
+ };
     const topic = "dataHoteles";
     const client = mqtt.connect(mqttOptions);
 

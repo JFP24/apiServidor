@@ -10,24 +10,25 @@ const eventoSchema = new mongoose.Schema({
         required: true
     },
     fecha: {
-        type: String, // Cambiado a tipo Date para manejar fechas de manera más eficiente
+        type: Date, // Cambiado a tipo Date para manejar fechas de manera más eficiente
         required: true
     },
     hora: {
         type: String,
         required: true
     },
-
-    
-},{ _id: false },);
+}, { _id: false });
 
 const respuestaSchema = new mongoose.Schema({
     dimasterID: {
         type: String,
         required: true,
+        unique: true, // Asegurar unicidad
         index: true // Índice para mejorar el rendimiento de las consultas
     },
     eventos: [eventoSchema] // Array de eventos
+}, {
+    timestamps: true // Agregar createdAt y updatedAt automáticamente
 });
 
 const Respuesta = mongoose.model('Respuesta', respuestaSchema);
