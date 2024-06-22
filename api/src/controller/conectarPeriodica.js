@@ -63,7 +63,7 @@ const processQueue = async () => {
                 for (let evento of eventosValidos) {
                     if (['lavanderia', 'checkin', 'puerta', 'houseKeeping', 'estado', 'noMolestar', 'miniBar'].includes(evento.nameEvent)) {
                         let habitacion = await Habitacion.findOne({ habitacionID: ID });
-                    
+
                         if (habitacion) {
                             habitacion[evento.nameEvent] = evento.value;
                             console.log(evento.value);
@@ -112,14 +112,14 @@ const processQueue = async () => {
 
 // Función que conecta al tópico y filtra la información para la base de datos
 export const connectAndFetchData = () => {
-    const mqttOptions = {
-        host: "diseven7.disevenapp.com",
-        port: 1884,
-        // username: 'UserdataHoteles',
-        // password: 'passdataHotelesd1s3v3n777',
-        username: '00000000c0029b4db6adadmin',
-        password: '00000000c0029b4db6adadmin',
-    };
+const mqttOptions = {
+    host: "diseven7.disevenapp.com",
+    port: 1884,
+    // username: 'UserdataHoteles',
+    // password: 'passdataHotelesd1s3v3n777',
+    username: '00000000c0029b4db6adadmin',
+    password: '00000000c0029b4db6adadmin',
+};
 
     const topic = "dataHoteles";
     const client = mqtt.connect(mqttOptions);
@@ -147,3 +147,16 @@ export const connectAndFetchData = () => {
         client.end();
     });
 };
+
+
+
+
+
+// const mqttOptions = {
+//     host: "diseven7.disevenapp.com",
+//     port: 1884,
+//     // username: 'UserdataHoteles',
+//     // password: 'passdataHotelesd1s3v3n777',
+//     username: '00000000c0029b4db6adadmin',
+//     password: '00000000c0029b4db6adadmin',
+// // };
