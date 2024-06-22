@@ -113,10 +113,12 @@ const processQueue = async () => {
 // Función que conecta al tópico y filtra la información para la base de datos
 export const connectAndFetchData = () => {
     const mqttOptions = {
-        host: "diseven7v2.disevenapp.com",
+        host: "diseven7.disevenapp.com",
         port: 1884,
-        username: 'UserdataHoteles',
-        password: 'passdataHotelesd1s3v3n777',
+        // username: 'UserdataHoteles',
+        // password: 'passdataHotelesd1s3v3n777',
+        username: '00000000c0029b4db6adadmin',
+        password: '00000000c0029b4db6adadmin',
     };
 
     const topic = "dataHoteles";
